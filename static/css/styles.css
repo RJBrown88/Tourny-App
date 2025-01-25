@@ -1,0 +1,299 @@
+/* Gradient background */
+body {
+    background: hsla(264, 83%, 16%, 1);
+    background: linear-gradient(225deg, hsla(264, 83%, 16%, 1) 10%, hsla(13, 60%, 50%, 1) 70%);
+    background: -moz-linear-gradient(225deg, hsla(264, 83%, 16%, 1) 10%, hsla(13, 60%, 50%, 1) 70%);
+    background: -webkit-linear-gradient(225deg, hsla(264, 83%, 16%, 1) 10%, hsla(13, 60%, 50%, 1) 70%);
+    filter: progid: DXImageTransform.Microsoft.gradient(startColorstr="#23074D", endColorstr="#CC5333", GradientType=1);
+    background-size: cover;
+    background-attachment: fixed;
+    color: #666666; /* Lighter Grey for paragraph text and table content */
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header styles - MODIFIED FOR LOGO BANNER */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    align-items: stretch; /* Stretch items to fill container width */
+    gap: 10px; /* Space between logo and title */
+}
+
+/* Logo styles - MODIFIED to stretch wider, allowing distortion */
+.header img.logo {
+    width: 100%; /* Expand the logo to fill the entire header width */
+    height: auto; /* Maintain aspect ratio initially, but width will dominate */
+    display: block; /* Ensure it behaves as a block element */
+    /* max-height: 300px;  REMOVED max-height to allow vertical stretch */
+    object-fit: stretch; /* Changed to 'stretch' to fill container, allows distortion */
+    margin-bottom: 10px; /* Add some space below the logo */
+}
+
+/* Title styles */
+.header h1 {
+    margin: 0; /* Remove default margin for h1 */
+    font-size: 2.5em; /* Larger title */
+    color: #FFD700; /* Bright Yellow for the title */
+    order: 2; /* Move the title below the logo */
+}
+
+/* Brackets and matches */
+.bracket {
+    background-color: rgba(42, 42, 42, 0.8); /* Transparency remains at 0.8 */
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 2px solid #E0F7FA; /* Light Cyan border */
+}
+
+.bracket h2 {
+    margin-bottom: 20px;
+    color: #FFD700; /* Bright Yellow for headings */
+    font-size: 2em; /* Increased size for bracket titles */
+}
+
+.match {
+    background-color: rgba(51, 51, 51, 0.8); /* Transparency remains at 0.8 */
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+    border: 2px solid #E0F7FA; /* Light Cyan border */
+}
+
+.match h3 {
+    margin-top: 0;
+    font-size: 1.5em;
+    color: #FFD700; /* Bright Yellow for round titles */
+}
+
+.match-info {
+    margin-bottom: 20px;
+}
+
+.match-info p {
+    margin: 5px 0;
+    color: #666666; /* Lighter Grey for paragraph text */
+    text-shadow:
+        -1px -1px 0 white,
+        1px -1px 0 white,
+        -1px 1px 0 white,
+        1px 1px 0 white; /* White border around text */
+}
+
+.teams-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.team-box {
+    background-color: rgba(58, 58, 58, 0.8); /* Transparency remains at 0.8 */
+    padding: 15px;
+    border-radius: 4px;
+    flex: 1;
+    max-width: 45%;
+    border: 2px solid #E0F7FA; /* Light Cyan border */
+}
+
+.team-box h4 {
+    margin-top: 0;
+    color: #00FF7F; /* Spring Green for team names */
+    font-size: 1.5em; /* Increased size for team names */
+}
+
+.player-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 10px;
+    list-style-type: none;
+    padding: 0;
+}
+
+.player-list li {
+    margin-bottom: 10px;
+}
+
+.player-name {
+    cursor: pointer;
+    color: #00FF7F; /* Spring Green for player names */
+    font-weight: bold;
+}
+
+.player-name:hover {
+    text-decoration: underline;
+}
+
+.player-stats {
+    display: none;
+    background-color: rgba(68, 68, 68, 0.8); /* Transparency remains at 0.8 */
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+    border: 2px solid #E0F7FA; /* Light Cyan border */
+}
+
+.player-stats p {
+    margin: 5px 0;
+    color: #00FF7F; /* Spring Green for player stats */
+}
+
+.game-mode-stats {
+    margin-top: 20px;
+}
+
+.game-mode-stats p {
+    margin: 5px 0;
+    color: #666666; /* Lighter Grey for paragraph text */
+    text-shadow:
+        -1px -1px 0 white,
+        1px -1px 0 white,
+        -1px 1px 0 white,
+        1px 1px 0 white; /* White border around text */
+}
+
+/* Admin section */
+.admin-section {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: rgba(30, 30, 30, 0.8); /* Transparency remains at 0.8 */
+    border-radius: 8px;
+    border: 2px solid #E0F7FA; /* Light Cyan border */
+}
+
+.admin-section h2 {
+    margin-bottom: 20px;
+    color: #FF6666; /* Brighter Red for headings */
+}
+
+.admin-section a {
+    color: #FFD700; /* Bright Yellow for links */
+    text-decoration: none;
+    font-weight: bold; /* Make links bold */
+}
+
+.admin-section a:hover {
+    text-decoration: underline;
+    color: #FFC400; /* Slightly darker yellow on hover */
+}
+
+.collapsible {
+    background-color: rgba(51, 51, 51, 0.8); /* Transparency remains at 0.8 */
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 1.1em;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    border: 2px solid #E0F7FA; /* Light Cyan border */
+}
+
+.collapsible:hover {
+    background-color: rgba(68, 68, 68, 0.8); /* Transparency remains at 0.8 */
+}
+
+.collapsible-content {
+    padding: 10px;
+    display: none;
+    overflow: hidden;
+    background-color: rgba(42, 42, 42, 0.8); /* Transparency remains at 0.8 */
+    border-radius: 4px;
+    border: 2px solid #E0F7FA; /* Light Cyan border */
+}
+
+/* Google Form link - MODIFIED for color scheme */
+.google-form-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 1.2em; /* Increased size for "Want to join the tournament?" text */
+    color: #FFD700; /* Yellow color for the text "Want to join..." */
+}
+
+.google-form-link a {
+    color: #00FF7F; /* Spring Green for links */
+    text-decoration: none;
+    font-weight: bold; /* Make links bold */
+}
+
+.google-form-link a:hover {
+    text-decoration: underline;
+    color: #00CC66; /* Slightly darker yellow on hover */
+}
+
+/* Login link at the bottom - MODIFIED for color scheme */
+.bottom-auth-links {
+    text-align: center;
+    margin-top: 20px;
+    margin-bottom: 40px; /* Add space at the bottom */
+    color: #FFD700; /* Yellow color for the text "Login" / "Logout" */
+}
+
+.bottom-auth-links a {
+    color: #00FF7F; /* Spring Green for links */
+    text-decoration: none;
+    font-weight: bold; /* Make links bold */
+}
+
+.bottom-auth-links a:hover {
+    text-decoration: underline;
+    color: #FFC400; /* Slightly darker yellow on hover */
+}
+
+/* Clickable elements */
+.clickable {
+    cursor: pointer;
+    color: #FFD700; /* Bright Yellow for clickable elements */
+    font-weight: bold;
+}
+
+.clickable:hover {
+    text-decoration: underline;
+}
+
+/* Winner text */
+.winner {
+    font-size: 1.4em;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #FFD700; /* Bright Yellow for winner text */
+}
+
+/* Match history link */
+.match-history-link {
+    margin-top: 10px;
+}
+
+.match-history-link a {
+    color: #00FF7F; /* Spring Green for links */
+    text-decoration: none;
+    font-weight: bold; /* Make links bold */
+}
+
+.match-history-link a:hover {
+    text-decoration: underline;
+    color: #00CC66; /* Slightly darker green on hover */
+}
+
+/* MVP/SVP text color */
+.match p strong {
+    color: #00FF7F; /* Spring Green for MVP/SVP text */
+}
+
+.match p {
+    color: #00FF7F; /* Spring Green for MVP/SVP text */
+}

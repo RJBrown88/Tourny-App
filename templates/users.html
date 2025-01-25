@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .user-list {
+            margin-top: 20px;
+        }
+        .user-item {
+            background-color: #2a2a2a;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .user-item h3 {
+            margin: 0;
+        }
+        .user-item p {
+            margin: 5px 0;
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash-message {
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .flash-success {
+            background-color: #28a745;
+            color: white;
+        }
+        .flash-error {
+            background-color: #dc3545;
+            color: white;
+        }
+        .add-user-form {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #1e1e1e;
+            border-radius: 8px;
+        }
+        .add-user-form input,
+        .add-user-form select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border: none;
+            background-color: #333;
+            color: #ffffff;
+        }
+        .add-user-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .add-user-form button:hover {
+            background-color: #357abd;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Management</h1>
+
+    <!-- Flash Messages -->
+    <div class="flash-messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Add User Form -->
+    <div class="add-user-form">
+        <h2>Add New User</h2>
+        <form action="{{ url_for('add_user') }}" method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <select name="role" required>
+                <option value="admin">Admin</option>
+                <option value="user">User</option>
+            </select>
+            <button type="submit">Add User</button>
+        </form>
+    </div>
+
+    <!-- User List -->
+    <div class="user-list">
+        {% for user in users %}
+            <div class="user-item">
+                <h3>{{ user.username }}</h3>
+                <p>Role: {{ user.role }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rivals' Outcasts Tournament</title>
+    <!-- Link to your CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section with Logo Banner -->
+        <div class="header">
+            <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Tournament Logo" class="logo">
+            <h1>Rivals' Outcasts Tournament</h1>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Brackets Display -->
+        <div class="brackets">
+            {% for bracket in brackets %}
+                <div class="bracket">
+                    <h2>{{ bracket.name }} ({{ bracket.bracket_type.capitalize() }} Elimination)</h2>
+
+                    <!-- Winners Bracket Matches -->
+                    <h3>Winners Bracket</h3>
+                    {% for match in bracket.matches %}
+                        {% if match.is_winners_bracket %}
+                            <div class="match">
+                                <!-- Round Number and Game Mode on the Same Line -->
+                                <h4>Round {{ match.round }} - <span class="clickable" onclick="toggleGameModeStats(this)">{{ match.game_mode }}</span></h4>
+
+                                <!-- Relevant Data (Hidden by Default) -->
+                                <div class="game-mode-stats" style="display: none;">
+                                    {% if match.game_mode == 'Domination' %}
+                                        <p><strong>Rounds Won:</strong> {{ match.rounds_won_team1 }} - {{ match.rounds_won_team2 }}</p>
+                                    {% elif match.game_mode == 'Convoy' or match.game_mode == 'Convergence' %}
+                                        <p><strong>Distance Pushed:</strong></p>
+                                        <p>{{ match.team1.name }}: {{ match.team1_distance_pushed }} meters</p>
+                                        <p>{{ match.team2.name }}: {{ match.team2_distance_pushed }} meters</p>
+                                    {% endif %}
+                                </div>
+
+                                <!-- Winner with Larger Font Size -->
+                                <div class="winner">Winner: {{ match.winner }}</div>
+
+                                <!-- MVP and SVP on the Same Line -->
+                                <p>
+                                    <strong>MVP:</strong> {{ match.mvp if match.mvp else 'Not assigned' }} |
+                                    <strong>SVP:</strong> {{ match.svp if match.svp else 'Not assigned' }}
+                                </p>
+
+                                <!-- Match History Link -->
+                                <div class="match-history-link">
+                                    <a href="{{ url_for('match_history', match_id=match.id) }}" class="clickable">View Match History</a>
+                                </div>
+
+                                <!-- Teams Container -->
+                                <div class="teams-container">
+                                    <!-- Team 1 Box -->
+                                    <div class="team-box">
+                                        <h4>{{ match.team1.name if match.team1 else 'Bye' }}</h4>
+                                        {% if match.team1 %}
+                                            <ul class="player-list">
+                                                {% for player in match.team1.players %}
+                                                    <li>
+                                                        <div class="player-name" onclick="toggleStats(this)">
+                                                            {{ player.player_name }} ({{ player.character_played }})
+                                                        </div>
+                                                        <div class="player-stats">
+                                                            <p>Kills: {{ player.kills }}</p>
+                                                            <p>Deaths: {{ player.deaths }}</p>
+                                                            <p>Assists: {{ player.assists }}</p>
+                                                            <p>Final Hits: {{ player.final_hits }}</p>
+                                                            <p>KOs: {{ player.kos }}</p>
+                                                            <p>Damage Taken: {{ player.damage_taken }}</p>
+                                                            <p>Damage Given: {{ player.damage_given }}</p>
+                                                            <p>Damage Healed: {{ player.damage_healed }}</p>
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Team 2 Box -->
+                                    <div class="team-box">
+                                        <h4>{{ match.team2.name if match.team2 else 'Bye' }}</h4>
+                                        {% if match.team2 %}
+                                            <ul class="player-list">
+                                                {% for player in match.team2.players %}
+                                                    <li>
+                                                        <div class="player-name" onclick="toggleStats(this)">
+                                                            {{ player.player_name }} ({{ player.character_played }})
+                                                        </div>
+                                                        <div class="player-stats">
+                                                            <p>Kills: {{ player.kills }}</p>
+                                                            <p>Deaths: {{ player.deaths }}</p>
+                                                            <p>Assists: {{ player.assists }}</p>
+                                                            <p>Final Hits: {{ player.final_hits }}</p>
+                                                            <p>KOs: {{ player.kos }}</p>
+                                                            <p>Damage Taken: {{ player.damage_taken }}</p>
+                                                            <p>Damage Given: {{ player.damage_given }}</p>
+                                                            <p>Damage Healed: {{ player.damage_healed }}</p>
+                                                        </div>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    <!-- Losers Bracket Matches -->
+                    {% if bracket.bracket_type == 'double' %}
+                        <h3>Losers Bracket</h3>
+                        {% for match in bracket.matches %}
+                            {% if not match.is_winners_bracket %}
+                                <div class="match">
+                                    <!-- Round Number and Game Mode on the Same Line -->
+                                    <h4>Round {{ match.round }} - <span class="clickable" onclick="toggleGameModeStats(this)">{{ match.game_mode }}</span></h4>
+
+                                    <!-- Relevant Data (Hidden by Default) -->
+                                    <div class="game-mode-stats" style="display: none;">
+                                        {% if match.game_mode == 'Domination' %}
+                                            <p><strong>Rounds Won:</strong> {{ match.rounds_won_team1 }} - {{ match.rounds_won_team2 }}</p>
+                                        {% elif match.game_mode == 'Convoy' or match.game_mode == 'Convergence' %}
+                                            <p><strong>Distance Pushed:</strong></p>
+                                            <p>{{ match.team1.name }}: {{ match.team1_distance_pushed }} meters</p>
+                                            <p>{{ match.team2.name }}: {{ match.team2_distance_pushed }} meters</p>
+                                        {% endif %}
+                                    </div>
+
+                                    <!-- Winner with Larger Font Size -->
+                                    <div class="winner">Winner: {{ match.winner }}</div>
+
+                                    <!-- MVP and SVP on the Same Line -->
+                                    <p>
+                                        <strong>MVP:</strong> {{ match.mvp if match.mvp else 'Not assigned' }} |
+                                        <strong>SVP:</strong> {{ match.svp if match.svp else 'Not assigned' }}
+                                    </p>
+
+                                    <!-- Match History Link -->
+                                    <div class="match-history-link">
+                                        <a href="{{ url_for('match_history', match_id=match.id) }}" class="clickable">View Match History</a>
+                                    </div>
+
+                                    <!-- Teams Container -->
+                                    <div class="teams-container">
+                                        <!-- Team 1 Box -->
+                                        <div class="team-box">
+                                            <h4>{{ match.team1.name if match.team1 else 'Bye' }}</h4>
+                                            {% if match.team1 %}
+                                                <ul class="player-list">
+                                                    {% for player in match.team1.players %}
+                                                        <li>
+                                                            <div class="player-name" onclick="toggleStats(this)">
+                                                                {{ player.player_name }} ({{ player.character_played }})
+                                                            </div>
+                                                            <div class="player-stats">
+                                                                <p>Kills: {{ player.kills }}</p>
+                                                                <p>Deaths: {{ player.deaths }}</p>
+                                                                <p>Assists: {{ player.assists }}</p>
+                                                                <p>Final Hits: {{ player.final_hits }}</p>
+                                                                <p>KOs: {{ player.kos }}</p>
+                                                                <p>Damage Taken: {{ player.damage_taken }}</p>
+                                                                <p>Damage Given: {{ player.damage_given }}</p>
+                                                                <p>Damage Healed: {{ player.damage_healed }}</p>
+                                                            </div>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </div>
+
+                                        <!-- Team 2 Box -->
+                                        <div class="team-box">
+                                            <h4>{{ match.team2.name if match.team2 else 'Bye' }}</h4>
+                                            {% if match.team2 %}
+                                                <ul class="player-list">
+                                                    {% for player in match.team2.players %}
+                                                        <li>
+                                                            <div class="player-name" onclick="toggleStats(this)">
+                                                                {{ player.player_name }} ({{ player.character_played }})
+                                                            </div>
+                                                            <div class="player-stats">
+                                                                <p>Kills: {{ player.kills }}</p>
+                                                                <p>Deaths: {{ player.deaths }}</p>
+                                                                <p>Assists: {{ player.assists }}</p>
+                                                                <p>Final Hits: {{ player.final_hits }}</p>
+                                                                <p>KOs: {{ player.kos }}</p>
+                                                                <p>Damage Taken: {{ player.damage_taken }}</p>
+                                                                <p>Damage Given: {{ player.damage_given }}</p>
+                                                                <p>Damage Healed: {{ player.damage_healed }}</p>
+                                                            </div>
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Admin Section (Visible only to admins) -->
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+        <div class="admin-section">
+            <h2>Admin Panel</h2>
+            <a href="{{ url_for('users') }}">Manage Users</a>
+
+            <!-- Manage Brackets -->
+            <button class="collapsible">Manage Brackets</button>
+            <div class="collapsible-content">
+                <!-- Add Bracket -->
+                <h3>Add Bracket</h3>
+                <form action="{{ url_for('create_bracket_route') }}" method="POST">
+                    <input type="text" name="bracket_name" placeholder="Bracket Name" required>
+                    <select name="bracket_type" required>
+                        <option value="single">Single Elimination</option>
+                        <option value="double">Double Elimination</option>
+                    </select>
+                    <!-- Team Selection for Bracket -->
+                    <div class="team-selection">
+                        <h4>Select Teams for Bracket</h4>
+                        {% for team in teams %}
+                        <label>
+                            <input type="checkbox" name="teams" value="{{ team.id }}">
+                            {{ team.name }} (Seed: {{ team.seed }})
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <button type="submit">Add Bracket</button>
+                </form>
+
+                <!-- Remove Bracket -->
+                <h3>Remove Bracket</h3>
+                <form action="{{ url_for('remove_bracket') }}" method="POST">
+                    <select name="bracket_id" required>
+                        <option value="" disabled selected>Select a Bracket</option>
+                        {% for bracket in brackets %}
+                            <option value="{{ bracket.id }}">{{ bracket.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Remove Bracket</button>
+                </form>
+            </div>
+
+            <!-- Manage Teams -->
+            <button class="collapsible">Manage Teams</button>
+            <div class="collapsible-content">
+                <!-- Add Team -->
+                <h3>Add Team</h3>
+                <form action="{{ url_for('add_team') }}" method="POST">
+                    <input type="text" name="team_name" placeholder="Team Name" required>
+                    <input type="number" name="seed" placeholder="Seed" required>
+                    <button type="submit">Add Team</button>
+                </form>
+
+                <!-- Remove Team -->
+                <h3>Remove Team</h3>
+                <form action="{{ url_for('remove_team') }}" method="POST">
+                    <select name="team_id" required>
+                        <option value="" disabled selected>Select a Team</option>
+                        {% for team in teams %}
+                            <option value="{{ team.id }}">{{ team.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Remove Team</button>
+                </form>
+            </div>
+
+            <!-- Manage Players -->
+            <button class="collapsible">Manage Players</button>
+            <div class="collapsible-content">
+                <!-- Add Player -->
+                <h3>Add Player</h3>
+                <form action="{{ url_for('add_player') }}" method="POST">
+                    <select name="team_id" required>
+                        <option value="" disabled selected>Select a Team</option>
+                        {% for team in teams %}
+                            <option value="{{ team.id }}">{{ team.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="player_name" placeholder="Player Name" required>
+
+                    <!-- Dropdown for Character Selection -->
+                    <select name="character_played" required>
+                        <option value="" disabled selected>Select a Character</option>
+                        <option value="Black Panther">Black Panther</option>
+                        <option value="Doctor Strange">Doctor Strange</option>
+                        <option value="Groot">Groot</option>
+                        <option value="The Punisher">The Punisher</option>
+                        <option value="Hela">Hela</option>
+                        <option value="Iron Man">Iron Man</option>
+                        <option value="Loki">Loki</option>
+                        <option value="Rocket Raccoon">Rocket Raccoon</option>
+                        <option value="Mantis">Mantis</option>
+                        <option value="Peni Parker">Peni Parker</option>
+                        <option value="Magneto">Magneto</option>
+                        <option value="Magik">Magik</option>
+                        <option value="Spider-Man">Spider-Man</option>
+                        <option value="Venom">Venom</option>
+                        <option value="Scarlet Witch">Scarlet Witch</option>
+                        <option value="Star-Lord">Star-Lord</option>
+                        <option value="Storm">Storm</option>
+                        <option value="Luna Snow">Luna Snow</option>
+                        <option value="Hulk">Hulk</option>
+                        <option value="Namor">Namor</option>
+                        <option value="Adam Warlock">Adam Warlock</option>
+                        <option value="Jeff the Land Shark">Jeff the Land Shark</option>
+                        <option value="Thor">Thor</option>
+                        <option value="Black Widow">Black Widow</option>
+                        <option value="Captain America">Captain America</option>
+                        <option value="Cloak and Dagger">Cloak and Dagger</option>
+                        <option value="Hawkeye">Hawkeye</option>
+                        <option value="Iron Fist">Iron Fist</option>
+                        <option value="Moon Knight">Moon Knight</option>
+                        <option value="Psylocke">Psylocke</option>
+                        <option value="Squirrel Girl">Squirrel Girl</option>
+                        <option value="Winter Soldier">Winter Soldier</option>
+                        <option value="Wolverine">Wolverine</option>
+                        <option value="Mister Fantastic">Mister Fantastic</option>
+                        <option value="Invisible Woman">Invisible Woman</option>
+                    </select>
+
+                    <button type="submit">Add Player</button>
+                </form>
+
+                <!-- Remove Player -->
+                <h3>Remove Player</h3>
+                <form action="{{ url_for('remove_player') }}" method="POST">
+                    <select name="player_id" required>
+                        <option value="" disabled selected>Select a Player</option>
+                        {% for team in teams %}
+                            {% for player in team.players %}
+                                <option value="{{ player.id }}">{{ player.player_name }} ({{ team.name }})</option>
+                            {% endfor %}
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Remove Player</button>
+                </form>
+            </div>
+
+            <!-- Update Player Stats -->
+            <button class="collapsible">Update Player Stats</button>
+            <div class="collapsible-content">
+                <form action="{{ url_for('update_player_stats') }}" method="POST">
+                    <select name="player_id" required>
+                        <option value="" disabled selected>Select a Player</option>
+                        {% for team in teams %}
+                            {% for player in team.players %}
+                                <option value="{{ player.id }}">{{ player.player_name }} ({{ team.name }})</option>
+                            {% endfor %}
+                        {% endfor %}
+                    </select>
+                    <input type="number" name="kills" placeholder="Kills" required>
+                    <input type="number" name="deaths" placeholder="Deaths" required>
+                    <input type="number" name="assists" placeholder="Assists" required>
+                    <input type="number" name="final_hits" placeholder="Final Hits" required>
+                    <input type="number" name="kos" placeholder="KOs" required>
+                    <input type="number" name="damage_taken" placeholder="Damage Taken" required>
+                    <input type="number" name="damage_given" placeholder="Damage Given" required>
+                    <input type="number" name="damage_healed" placeholder="Damage Healed" required>
+                    <button type="submit">Update Stats</button>
+                </form>
+            </div>
+
+            <!-- Update Match Result -->
+            <button class="collapsible">Update Match Result</button>
+            <div class="collapsible-content">
+                <form action="{{ url_for('update_match_result') }}" method="POST">
+                    <select name="match_id" required>
+                        <option value="" disabled selected>Select a Match</option>
+                        {% for bracket in brackets %}
+                            {% for match in bracket.matches %}
+                                <option value="{{ match.id }}">
+                                    {{ match.team1.name if match.team1 else 'Bye' }} vs {{ match.team2.name if match.team2 else 'Bye' }} ({{ 'Winners' if match.is_winners_bracket else 'Losers' }} Round {{ match.round }})
+                                </option>
+                            {% endfor %}
+                        {% endfor %}
+                    </select>
+                    <select name="winner" required>
+                        <option value="" disabled selected>Select Winner</option>
+                        {% for team in teams %}
+                            <option value="{{ team.name }}">{{ team.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Update Result</button>
+                </form>
+            </div>
+
+            <!-- Update MVP/SVP -->
+            <button class="collapsible">Update MVP/SVP</button>
+            <div class="collapsible-content">
+                <form action="{{ url_for('update_mvp_svp') }}" method="POST">
+                    <select name="match_id" id="match-select" required onchange="updatePlayerDropdowns()">
+                        <option value="" disabled selected>Select a Match</option>
+                        {% for bracket in brackets %}
+                            {% for match in bracket.matches %}
+                                <option value="{{ match.id }}" data-winner="{{ match.winner }}" data-team1="{{ match.team1.name if match.team1 else '' }}" data-team2="{{ match.team2.name if match.team2 else '' }}">
+                                    {{ match.team1.name if match.team1 else 'Bye' }} vs {{ match.team2.name if match.team2 else 'Bye' }} (Round {{ match.round }})
+                                </option>
+                            {% endfor %}
+                        {% endfor %}
+                    </select>
+
+                    <!-- MVP Dropdown -->
+                    <label for="mvp-select">MVP (Winning Team):</label>
+                    <select name="mvp" id="mvp-select" required>
+                        <option value="" disabled selected>Select MVP</option>
+                        <!-- Players will be populated dynamically by JavaScript -->
+                    </select>
+
+                    <!-- SVP Dropdown -->
+                    <label for="svp-select">SVP (Losing Team):</label>
+                    <select name="svp" id="svp-select" required>
+                        <option value="" disabled selected>Select SVP</option>
+                        <!-- Players will be populated dynamically by JavaScript -->
+                    </select>
+
+                    <button type="submit">Update MVP/SVP</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Google Form Link -->
+        <div class="google-form-link">
+            <p>Want to join the tournament?
+                <a href="{{ get_google_form_url() }}" target="_blank">Sign up here!</a>
+            </p>
+        </div>
+
+        <!-- Bottom Login/Logout Link - ADDED HERE -->
+        <div class="bottom-auth-links">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <script>
+        // JavaScript to handle collapsible sections
+        const collapsibles = document.querySelectorAll(".collapsible");
+        collapsibles.forEach((collapsible) => {
+            collapsible.addEventListener("click", function () {
+                this.classList.toggle("active");
+                const content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "block";
+                }
+            });
+        });
+
+        // JavaScript to toggle player stats
+        function toggleStats(element) {
+            const stats = element.nextElementSibling;
+            if (stats.style.display === "block") {
+                stats.style.display = "none";
+            } else {
+                stats.style.display = "block";
+            }
+        }
+
+        // JavaScript to toggle game mode stats
+        function toggleGameModeStats(element) {
+            const stats = element.parentElement.nextElementSibling;
+            if (stats.style.display === "block") {
+                stats.style.display = "none";
+            } else {
+                stats.style.display = "block";
+            }
+        }
+
+        // Function to update MVP and SVP dropdowns
+        function updatePlayerDropdowns() {
+            const matchSelect = document.getElementById('match-select');
+            const mvpSelect = document.getElementById('mvp-select');
+            const svpSelect = document.getElementById('svp-select');
+
+            // Clear existing options
+            mvpSelect.innerHTML = '<option value="" disabled selected>Select MVP</option>';
+            svpSelect.innerHTML = '<option value="" disabled selected>Select SVP</option>';
+
+            // Get the selected match
+            const selectedMatch = matchSelect.options[matchSelect.selectedIndex];
+            const winner = selectedMatch.getAttribute('data-winner');
+            const team1 = selectedMatch.getAttribute('data-team1');
+            const team2 = selectedMatch.getAttribute('data-team2');
+
+            // If no winner yet, use team1 and team2 for MVP and SVP respectively
+            let winningTeam = winner ? (winner === team1 ? team1 : team2) : team1;
+            let losingTeam = winner ? (winner === team1 ? team2 : team1) : team2;
+
+            // Fetch players from the winning and losing teams
+            if (winningTeam) {
+                fetch(`/get-players?team=${winningTeam}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.players.forEach(player => {
+                            const option = document.createElement('option');
+                            option.value = player;
+                            option.textContent = player;
+                            mvpSelect.appendChild(option);
+                        });
+                    });
+            }
+
+            if (losingTeam) {
+                fetch(`/get-players?team=${losingTeam}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data.players.forEach(player => {
+                            const option = document.createElement('option');
+                            option.value = player;
+                            option.textContent = player;
+                            svpSelect.appendChild(option);
+                        });
+                    });
+            }
+        }
+    </script>
+</body>
+</html>

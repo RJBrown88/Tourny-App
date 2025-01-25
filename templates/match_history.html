@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match History</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .history-item {
+            background-color: #2a2a2a;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .history-item p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Match History</h1>
+    {% for entry in history %}
+        <div class="history-item">
+            <p><strong>Action:</strong> {{ entry.action }}</p>
+            <p><strong>Timestamp:</strong> {{ entry.timestamp }}</p>
+            <p><strong>Admin:</strong> {{ entry.admin.username }}</p>
+            <p><strong>Details:</strong> {{ entry.data }}</p>
+        </div>
+    {% endfor %}
+</body>
+</html>
