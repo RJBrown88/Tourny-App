@@ -1,10 +1,10 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
 import requests
-import os
 from dotenv import load_dotenv
 import secrets
 from datetime import datetime
@@ -15,7 +15,17 @@ load_dotenv()
 
 # Initialize Flask app
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tournament.db'
+
+# Get the Render database URL from the environment variable, or use SQLite locally
+database_url = os.environ.get('DATABASE_URL')
+if database_url:
+    # If on Render, update the prefix from postgres:// to postgresql://
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace("postgres://", "postgresql://", 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tournament.db'
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.secret_key = os.getenv('SECRET_KEY')  # Load secret key from environment variable
 
