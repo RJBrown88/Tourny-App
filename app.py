@@ -585,7 +585,47 @@ def update_rounds_won():
     else:
         flash('Match not found', 'error')
     return redirect(url_for('index'))
+from flask import request, jsonify
 
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    """
+    Webhook endpoint to handle incoming data from Google Forms or other sources.
+    Expects JSON data with team and player information.
+    """
+    data = request.json  # Get the JSON data from the request
+
+    # Extract data from the JSON payload
+    team_name = data.get('team_name')
+    player_name = data.get('player_name')
+
+    # Validate the data
+    if not all([team_name, player_name]):
+        return jsonify({"error": "Missing required data (team_name, player_name)"}), 400
+
+    # Check if the team already exists
+    team = Team.query.filter_by(name=team_name).first()
+    if not team:
+        # Create a new team if it doesn't exist
+        team = Team(name=team_name)
+        db.session.add(team)
+        db.session.commit()
+
+    # Check if the player already exists in the team
+    existing_player = Player.query.filter_by(team_id=team.id, player_name=player_name).first()
+    if existing_player:
+        return jsonify({"success": False, "message": "Player already exists in the team"}), 200
+
+    # Add the player to the team (without character_played)
+    player = Player(
+        team_id=team.id,
+        player_name=player_name
+    )
+    db.session.add(player)
+    db.session.commit()
+
+    # Return a success response
+    return jsonify({"success": True, "message": "Player added to the team successfully"}), 200
 # --- Bracket Management Routes ---
 
 @app.route('/create-bracket', methods=['POST'])
